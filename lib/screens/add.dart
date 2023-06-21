@@ -13,8 +13,26 @@ class Add extends StatefulWidget {
 class _AddState extends State<Add> {
 
   final _titlcontroller = TextEditingController();
-  final _datecontroller = TextEditingController();
   var status = true;
+
+  DateTime? _selectedDate;
+
+  void _presentDatePicker() {
+    showDatePicker(
+            context: context,
+            initialDate: DateTime.now(),
+            firstDate: DateTime(2020),
+            lastDate: DateTime.now())
+        .then((pickedDate) {
+      if (pickedDate == null) {
+        return;
+      }
+      setState(() {
+        _selectedDate = DateTime(pickedDate.year, pickedDate.month, pickedDate.day);
+      });
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -41,22 +59,18 @@ class _AddState extends State<Add> {
                 controller: _titlcontroller,
                 decoration: const InputDecoration(
                   labelText: "Title",
-                  prefixIcon: Icon(Icons.account_box),
+                  prefixIcon: Icon(Icons.title),
                   border: OutlineInputBorder()
                 ),
               ),
               const SizedBox(height: 30),
-              TextFormField(
-                controller: _datecontroller,
-                decoration: const  InputDecoration(
-                  labelText: "Date",
-                  errorStyle: TextStyle(color: Colors.red),
-                  prefixIcon: Icon(Icons.calendar_today),
-                  border: OutlineInputBorder()
-                ),
-              ),
+              
+              ElevatedButton(
+            onPressed: _presentDatePicker, child: const Text('Select Date')),
               const SizedBox(height: 30),
-              const Text("Status"),
+              Center(child: Text(_selectedDate ==null ? " ":_selectedDate.toString().substring(0, 10))),
+              const SizedBox(height: 30),
+              const Center(child: Text("Status")),
               const SizedBox(height: 30),
               Checkbox(value: status, onChanged: (value) {
                 setState(() {
@@ -73,7 +87,7 @@ class _AddState extends State<Add> {
               s="En cours";
               }
               
-              var t =Task(_titlcontroller.text, _datecontroller.text, s);
+              var t =Task(_titlcontroller.text, _selectedDate.toString().substring(0, 10), s);
               SqlHelper.instance!.insert(t);
               Navigator.pop(context,"res");
               }, child: const Text("Save"))

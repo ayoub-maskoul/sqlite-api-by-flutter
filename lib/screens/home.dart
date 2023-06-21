@@ -63,14 +63,9 @@ class _MyhomeState extends State<Myhome> {
               });
             },
             ),
-      
         appBar: AppBar(
-        
-        
           title:const Text('My app'),
-          
           ),
-
         body: FutureBuilder(
           future: SqlHelper.instance!.getAll(),
           builder:(context, snapshot){
@@ -80,8 +75,6 @@ class _MyhomeState extends State<Myhome> {
                 child:  CircularProgressIndicator(),
               );
             }
-
-
             if (snapshot.hasError){
               return Center(
                 child: Text(snapshot.error.toString()),
@@ -93,13 +86,33 @@ class _MyhomeState extends State<Myhome> {
                 child: Text("no data"),
               );
             }
-
             return ListView(children: snapshot.data!.reversed.map((e) {
               return ListTile(
                 onLongPress: () {
-                  setState(() {
-                    SqlHelper.instance!.delete(e ["id"]);
-                  });
+                    showDialog<String>(
+                              context: context,
+                              builder: (BuildContext context) => AlertDialog(
+                                title: const Text('Delete'),
+                                content: const Text('Are you sure?'),
+                                actions: <Widget>[
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context),
+                                    child: const Text('Cancel'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                      
+                                      SqlHelper.instance!.delete(e ["id"]);
+                                      setState(() {
+                                        
+                                      });
+                                    },
+                                    child: const Text('OK'),
+                                  ),
+                                ],
+                              ),
+                            );
                 },
                 onTap: () {
                   Navigator.push(context, MaterialPageRoute(builder: (context) => Details(task: Task(e["title"].toString(),e["date"].toString(),e["status"].toString()),id:e['id']),)).then((value){
