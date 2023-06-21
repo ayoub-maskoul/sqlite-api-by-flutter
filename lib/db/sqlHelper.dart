@@ -1,6 +1,7 @@
+// ignore: file_names
 import 'package:sqflite/sqflite.dart';
-import "../globals/variable_global.dart";
-import "../model/todo.dart";
+import '../global/variable_global.dart';
+import '../model/task.dart';
 
 class SqlHelper{
 
@@ -10,9 +11,7 @@ class SqlHelper{
 
     
     Database? _db;
-    // Database?  getdb() {
-    //    _db ??= await initialiseDatabase();
-    // }
+    
 
     Future<Database?> getDatabase() async {
       if (_db != null){
@@ -42,7 +41,7 @@ class SqlHelper{
 
   Future<List<Map>> getAll() async{
     Database? database = await getDatabase();
-    return await Future.delayed(Duration(seconds: 0),(){
+    return await Future.delayed(const Duration(seconds: 0),(){
       return database!.rawQuery("SELECT * FROM ${VarGlob.table}");
     });
   }
@@ -59,6 +58,11 @@ class SqlHelper{
   Future<int> insert(Task task) async{
     Database? database = await getDatabase();
     return await database!.insert(VarGlob.table,task.toMap());
+  }
+
+  Future<int> update(Task task,int id) async{
+    Database? database = await getDatabase();
+    return await database!.update(VarGlob.table,task.toMap(),where: "id=$id");
   }
 
 }

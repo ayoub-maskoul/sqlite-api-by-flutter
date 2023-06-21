@@ -1,4 +1,4 @@
-import '../globals/variable_global.dart';
+import '../global/variable_global.dart';
 
 class Task{
   int? id;
